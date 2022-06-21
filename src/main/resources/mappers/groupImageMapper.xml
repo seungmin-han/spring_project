@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.inhatc.mapper.GroupImageMapper">
+
+	<insert id="create" parameterType="com.inhatc.domain.GroupImageVO" useGeneratedKeys="true" keyProperty="groupImageSeq">
+		insert 
+			groupImage
+		set 
+			groupImageName = #{groupImageName}
+			, groupImageType = #{groupImageType}
+			, groupImagePath = #{groupImagePath}
+			, groupImageSize = #{groupImageSize}
+			, groupImageThumNy = 1
+			, groupSeq = #{groupSeq}
+	</insert>
+	
+	<select id="readOne" resultType="com.inhatc.domain.GroupImageVO">
+		select 
+			* 
+		from 
+			groupImage
+		where 
+			groupImageSeq = #{groupImageSeq}
+	</select>
+	
+	<update id="update">
+		update 
+			groupImage 
+		set 
+			groupImageThumNy = 1
+		where 
+			groupImageSeq = #{groupImageSeq}
+	</update>
+	
+	<update id="updateOther">
+		update 
+			groupImage 
+		set 
+			groupImageThumNy = 0
+		where 
+			groupImageSeq != #{groupImageSeq}
+	</update>
+	
+	<select id="readAll" resultType="com.inhatc.domain.GroupImageVO">
+		select 
+			* 
+		from 
+			groupImage
+		where 
+			groupSeq = #{groupSeq}
+	</select>
+	
+	<update id="updateByDelete">
+		update 
+			groupImage
+		set 
+			groupImageDelNy = 1 
+		where 
+			groupImageSeq = #{groupImageSeq}
+	</update>
+	
+	
+</mapper>

@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.inhatc.mapper.JoinStatusMapper">
+
+	<insert id="create" parameterType="com.inhatc.domain.JoinStatusVO" useGeneratedKeys="true" keyProperty="joinStatusSeq">
+		insert 
+			joinStatus 
+		set 
+			joinStatusCd = #{joinStatusCd}
+			, memberSeq = #{memberSeq}
+			, groupSeq = #{groupSeq}
+	</insert>
+	
+	<insert id="joinGroup" parameterType="com.inhatc.domain.JoinStatusVO">
+		INSERT 
+			joinStatus 
+		SET 
+			joinStatusCd = IF(
+			(
+				SELECT 
+					groupJoinAcceptNy 
+				FROM tbl_group 
+				WHERE groupSeq=#{groupSeq}
+			) = 0 , 'W', 'Y') 
+			, groupSeq = #{groupSeq}
+			, memberSeq = #{memberSeq}
+	</insert>
+	
+	
+	<select id="readOne" resultType="com.inhatc.domain.JoinStatusVO">
+		select 
+			* 
+		from 
+			joinStatus
+		where 
+			joinStatusSeq = #{joinStatusSeq}
+	</select>
+	
+	<select id="readOneByFK" resultType="com.inhatc.domain.JoinStatusVO">
+		select 
+			* 
+		from 
+			joinStatus
+		where 
+			memberSeq = #{memberSeq}
+			AND groupSeq = #{groupSeq}
+	</select>
+	
+	<update id="update">
+		update 
+			joinStatus 
+		set 
+			joinStatusCd = IF(
+			(
+				SELECT 
+					groupJoinAcceptNy 
+				FROM tbl_group 
+				WHERE groupSeq=#{groupSeq}
+			) = 0 , 'W', 'Y') 
+		where 
+			groupSeq = #{groupSeq}
+			AND memberSeq = #{memberSeq}
+	</update>
+	
+	<update id="updateByPK">
+		UPDATE
+			joinStatus 
+		SET 
+			joinStatusCd = #{joinStatusCd}
+		WHERE 
+			joinStatusSeq = #{joinStatusSeq}
+	</update>
+	
+	<delete id="updateByDelete">
+		update 
+			joinStatus 
+		set 
+			joinStatusDelNy = 1 
+		where 
+			joinStatusSeq = #{joinStatusSeq}
+	</delete>
+	
+	<select id="readAll" resultType="java.util.HashMap">
+		SELECT 
+			joinStatusSeq
+			, joinStatusCd
+			, CASE
+		    	WHEN joinStatusCd = 'Y'
+		    	THEN '가입됨'
+		    	WHEN joinStatusCd = 'W'
+		    	THEN '승인대기'
+		    END AS joinStatusCdText
+		    , memberNickName
+		    , mem.memberSeq
+		FROM 
+			joinStatus AS jst
+		INNER JOIN member AS mem ON mem.memberSeq = jst.memberSeq
+		WHERE
+			groupSeq = #{groupSeq}
+			AND NOT joinStatusCd = 'N'
+		ORDER BY
+			joinStatusCd DESC ;
+	</select>
+	
+</mapper>

@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.inhatc.mapper.PostMapper">
+
+	<insert id="create" parameterType="com.inhatc.domain.PostVO" useGeneratedKeys="true" keyProperty="postSeq">
+		INSERT 
+			post
+		SET
+			postTitle = #{postTitle}
+			, postPublicNy = #{postPublicNy} 
+			, postContent = #{postContent} 
+			, boardSeq = #{boardSeq}
+			, subjectSeq = #{subjectSeq}
+			, memberSeq = #{memberSeq}
+			, groupSeq = #{groupSeq}
+	</insert>
+	<insert id="createWithoutSubjectSeq" parameterType="com.inhatc.domain.PostVO" useGeneratedKeys="true" keyProperty="postSeq">
+		INSERT 
+			post
+		SET
+			postTitle = #{postTitle}
+			, postPublicNy = #{postPublicNy} 
+			, postContent = #{postContent} 
+			, boardSeq = #{boardSeq}
+			, subjectSeq = null
+			, memberSeq = #{memberSeq}
+			, groupSeq = #{groupSeq}
+	</insert>
+	<insert id="createWithoutGroupSeq" parameterType="com.inhatc.domain.PostVO" useGeneratedKeys="true" keyProperty="postSeq">
+		INSERT 
+			post
+		SET
+			postTitle = #{postTitle}
+			, postPublicNy = #{postPublicNy} 
+			, postContent = #{postContent} 
+			, boardSeq = #{boardSeq}
+			, subjectSeq = #{subjectSeq}
+			, memberSeq = #{memberSeq}
+			, groupSeq = null
+	</insert>
+	<insert id="createWithoutSubjectSeqAndGroupSeq" parameterType="com.inhatc.domain.PostVO" useGeneratedKeys="true" keyProperty="postSeq">
+		INSERT 
+			post
+		SET
+			postTitle = #{postTitle}
+			, postPublicNy = #{postPublicNy} 
+			, postContent = #{postContent} 
+			, boardSeq = #{boardSeq}
+			, subjectSeq = null
+			, memberSeq = #{memberSeq}
+			, groupSeq = null
+	</insert>
+	<sql id="selectPost">
+		SELECT 
+			p.*
+			, m.memberNickName
+			, s.subjectName
+			, b.boardName
+		FROM
+			post AS p
+		INNER JOIN member AS m ON m.memberSeq = p.memberSeq
+		LEFT JOIN board AS b ON b.boardSeq = p.boardSeq
+		LEFT JOIN subject AS s ON s.subjectSeq = p.subjectSeq
+	</sql>
+	<select id="readAllList" resultType="java.util.HashMap">
+		<include refid="selectPost"></include>
+		WHERE 
+			postDelNy = 0
+			AND postPublicNy = 1
+		ORDER BY p.postSeq DESC
+		LIMIT #{startPoint}, #{listCount}
+
+	</select>
+	<select id="readAllListWithKeyword" resultType="java.util.HashMap">
+		<include refid="selectPost"></include>
+		<![CDATA[
+		WHERE 
+			postDelNy = 0
+			AND postPublicNy = 1
+			AND p.postTitle LIKE #{keyword}
+		ORDER BY p.postSeq DESC
+		LIMIT #{startPoint}, #{listCount}
+		
+		]]>
+	</select>
+	<select id="readAllListInGroup" resultType="java.util.HashMap">
+		<include refid="selectPost"></include>
+		WHERE 
+			postDelNy = 0
+			AND p.groupSeq = #{groupSeq}
+		ORDER BY p.postSeq DESC
+		LIMIT #{startPoint}, #{listCount}
+	</select>
+	<select id="readAllListInGroupWithKeyword" resultType="java.util.HashMap">
+		<include refid="selectPost"></include>
+		<![CDATA[
+		WHERE 
+			postDelNy = 0
+			AND groupSeq = #{groupSeq}
+			AND p.postTitle LIKE #{keyword}
+		ORDER BY p.postSeq DESC
+		LIMIT #{startPoint}, #{listCount}
+		]]>
+	</select>
+	
+	<select id="readPopularPostList" resultType="java.util.HashMap">
+		<include refid="selectPost"></include>
+		WHERE 
+			postDelNy = 0
+		ORDER BY p.postLike DESC, p.postView DESC, p.postSeq DESC
+		LIMIT 0, 5
+	</select>
+	<select id="readTodayTopicList" resultType="java.util.HashMap">
+		<include refid="selectPost"></include>
+		WHERE 
+			postDelNy = 0
+			AND b.boardName = "오늘의 주제"
+		ORDER BY p.postLike DESC, p.postView DESC, p.postSeq DESC
+		LIMIT 0, 6
+	</select>
+	
+	<sql id="selectPostCount">
+		SELECT 
+			count(*)
+		FROM
+			post AS p
+		LEFT JOIN board AS b ON b.boardSeq = p.boardSeq
+		LEFT JOIN subject AS s ON s.subjectSeq = p.subjectSeq
+		INNER JOIN member AS m ON m.memberSeq = p.memberSeq
+		WHERE 
+			postDelNy = 0
+	</sql>
+	
+	<select id="countReadAllList" resultType="int">
+		<include refid="selectPostCount"></include>
+			AND postPublicNy = 1
+	</select>
+	<select id="countReadAllListWithKeyword" resultType="int">
+		<include refid="selectPostCount"></include>
+		<![CDATA[
+			AND postPublicNy = 1
+			AND p.postTitle LIKE #{keyword}
+		]]>
+	</select>
+	<select id="countReadAllListInGroup" resultType="int">
+		<include refid="selectPostCount"></include>
+			AND p.groupSeq = #{groupSeq} 
+	</select>
+	<select id="countReadAllListInGroupWithKeyword" resultType="int">
+		<include refid="selectPostCount"></include>
+		<![CDATA[
+			AND p.groupSeq = #{groupSeq} 
+			AND p.postTitle LIKE #{keyword}
+		]]>
+	</select>
+	<select id="readOne" resultType="java.util.HashMap">
+		SELECT 
+			p.*
+			, m.memberNickName
+			, s.subjectName
+			, b.boardName
+			, g.groupName
+		FROM
+			post AS p
+		LEFT JOIN board AS b ON b.boardSeq = p.boardSeq
+		LEFT JOIN subject AS s ON s.subjectSeq = p.subjectSeq
+		LEFT JOIN tbl_group AS g ON g.groupSeq = p.groupSeq
+		INNER JOIN member AS m ON m.memberSeq = p.memberSeq
+		WHERE 
+			postDelNy = 0
+			AND p.postSeq = #{postSeq} 
+	</select>
+	<update id="updateByDelete">
+		UPDATE
+			post
+		SET
+			postDelNy = 1 
+		WHERE 
+			postSeq = #{postSeq}
+	</update>
+	<update id="update" parameterType="com.inhatc.domain.PostVO">
+		UPDATE
+			post
+		SET
+			postTitle = #{postTitle}
+			, postPublicNy = #{postPublicNy} 
+			, postContent = #{postContent} 
+			, boardSeq = #{boardSeq}
+			, subjectSeq = #{subjectSeq}
+			, memberSeq = #{memberSeq}
+			, groupSeq = #{groupSeq}
+		WHERE 
+			postSeq = #{postSeq}
+	</update>
+	<update id="updateWithoutSubjectSeq" parameterType="com.inhatc.domain.PostVO">
+		UPDATE
+			post
+		SET
+			postTitle = #{postTitle}
+			, postPublicNy = #{postPublicNy} 
+			, postContent = #{postContent} 
+			, boardSeq = #{boardSeq}
+			, subjectSeq = null
+			, memberSeq = #{memberSeq}
+			, groupSeq = #{groupSeq}
+		WHERE 
+			postSeq = #{postSeq}
+	</update>
+	<update id="updateWithoutGroupSeq" parameterType="com.inhatc.domain.PostVO" >
+		UPDATE
+			post
+		SET
+			postTitle = #{postTitle}
+			, postPublicNy = #{postPublicNy} 
+			, postContent = #{postContent} 
+			, boardSeq = #{boardSeq}
+			, subjectSeq = #{subjectSeq}
+			, memberSeq = #{memberSeq}
+			, groupSeq = null
+		WHERE 
+			postSeq = #{postSeq}
+	</update>
+	<update id="updateWithoutSubjectSeqAndGroupSeq" parameterType="com.inhatc.domain.PostVO">
+		UPDATE
+			post
+		SET
+			postTitle = #{postTitle}
+			, postPublicNy = #{postPublicNy} 
+			, postContent = #{postContent} 
+			, boardSeq = #{boardSeq}
+			, subjectSeq = null
+			, memberSeq = #{memberSeq}
+			, groupSeq = null
+		WHERE 
+			postSeq = #{postSeq}
+	</update>
+	
+</mapper>
+

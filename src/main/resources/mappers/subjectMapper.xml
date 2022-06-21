@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.inhatc.mapper.SubjectMapper">
+	<insert id="create" parameterType="com.inhatc.domain.SubjectVO">
+		INSERT 
+			subject
+		SET 
+			subjectName = #{subjectName}
+			, boardSeq = #{boardSeq}
+	</insert>
+	<update id="update" parameterType="com.inhatc.domain.SubjectVO">
+		UPDATE
+			subject
+		SET
+			subjectName = #{subjectName}
+		WHERE
+			subjectSeq = #{subjectSeq}
+	</update>
+	<select id="readAll" resultType="com.inhatc.domain.SubjectVO">
+		SELECT 
+			* 
+		FROM 
+			subject
+		WHERE 
+			subjectDelNy = 0
+			and boardSeq = #{boardSeq}
+	</select>
+	<update id="deleteByUpdate">
+		UPDATE 
+			subject
+		SET 
+			subjectDelNy = 1 
+		WHERE 
+			subjectSeq = #{subjectSeq}
+	</update>
+</mapper>
