@@ -4,7 +4,7 @@
 
 ## 데이터 도메인
 
-[데이터 도메인.xlsx](데이터도메인.xlsx)
+[데이터 도메인.xlsx](데이터%20도메인.xlsx)
 
 ## 메뉴 구조도
 
@@ -52,4 +52,4 @@
 
 ## 스키마 생성 SQL
 
-[table_define.sql](table_define.sql)
+[table define.sql](table%20define.sql)
