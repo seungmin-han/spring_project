@@ -226,24 +226,24 @@ WHERE
   		  )  	
 	  ) 
       OR 
-		EXISTS 
+		  EXISTS 
+      (
+		    SELECT
+          groupTagName
+		    FROM
+          groupTag
+		    WHERE
+          groupTagName REGEXP 
         (
-		  SELECT
-            groupTagName
-		  FROM
-            groupTag
-		  WHERE
-            groupTagName REGEXP 
-            (
-			  SELECT 
-                GROUP_CONCAT(memberTagName SEPARATOR '|') AS memberTagNames
-			  FROM
-                memberTag
-			  WHERE 
-                memberSeq = #{memberSeq}
-            )
-            AND grouptag.groupSeq = grp.groupSeq
+			    SELECT 
+            GROUP_CONCAT(memberTagName SEPARATOR '|') AS memberTagNames
+			    FROM
+            memberTag
+			    WHERE 
+            memberSeq = #{memberSeq}
         )
+        AND grouptag.groupSeq = grp.groupSeq
+      )
     )
 GROUP BY 
   grp.groupSeq
