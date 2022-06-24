@@ -12,54 +12,61 @@
   crossorigin="anonymous"></script>
 <script type="text/javascript" src="/resources/externalLib/ckeditor/ckeditor.js"></script>
 <script type="text/javascript" src="/resources/script/subject.js"></script>
+<link rel="stylesheet" href="/resources/stylesheet/common.css">
+<link rel="stylesheet" href="/resources/stylesheet/content.css">
 </head>
 <body>
 	<c:import url="header.jsp"></c:import>
-	<div class="wrap">
+	<section class="wrap postWrap">
 		<form action="/post/create" method="post" enctype="multipart/form-data">
-			<div>
-				<label>게시판/말머리</label>
-				<select name="boardSeq" required>
-					<option value="">게시판 선택</option>
-					<c:forEach items="${boardList }" var="boardItem">
-						<option value="${boardItem.boardSeq} ">${boardItem.boardName }</option>
-					</c:forEach>
-				</select>
-				<select name="subjectSeq">
-					<option value="0">말머리 없음</option>
-				</select>
+			<div class="formWrap">
+				<div>
+					<label>게시판/말머리</label>
+					<select class="formControl" name="boardSeq" required>
+						<option class="formControl" value="">게시판 선택</option>
+						<c:forEach items="${boardList }" var="boardItem">
+							<option value="${boardItem.boardSeq} ">${boardItem.boardName }</option>
+						</c:forEach>
+					</select>
+					<select class="formControl" name="subjectSeq">
+						<option value="0">말머리 없음</option>
+					</select>
+				</div>
+				<div>
+					<label>공개 여부</label>
+					<div>그룹 공개 &nbsp;<input type="radio" name="postPublicNy" value="0" checked></div>
+					<div>전체 공개 &nbsp;<input type="radio" name="postPublicNy" value="1"></div>	
+				</div>
+				<div id="group">
+					<label>그룹 선택</label>
+					<select class="formControl" name="groupSeq">
+						<option value="0">그룹 선택</option>
+						<c:forEach items="${groupList }" var="groupItem">
+							<option value="${groupItem.groupSeq} ">${groupItem.groupName }</option>
+						</c:forEach>
+					</select>
+				</div>
+				<div>
+					<label>작성자</label>
+					<input class="formControl" name="memberNickName" type="text" value="${memberNickName }" readonly >
+				</div>
+				<div>
+					<label>제목</label>
+					<input class="formControl title" id="postTitle" name="postTitle" type="text" required>
+				</div>
+				<div>
+					<textarea id="postContent" name="postContent" required></textarea>
+				</div>
+
+				<input type="hidden" name="memberSeq" value="${memberSeq }">
+				<div class="buttonWrap">
+					<button class="btn" type="button" onclick="history.back()">돌아가기</button>
+					<button class="btn" type='submit'>게시글 작성</button>
+				</div>
+				
 			</div>
-			<div>
-				<label>공개 여부</label><br>
-				그룹 공개<input type="radio" name="postPublicNy" value="0" checked>
-				전체 공개<input type="radio" name="postPublicNy" value="1">	
-			</div>
-			<div id="group">
-				<label>그룹 선택</label>
-				<select name="groupSeq">
-					<option value="0">그룹 선택</option>
-					<c:forEach items="${groupList }" var="groupItem">
-						<option value="${groupItem.groupSeq} ">${groupItem.groupName }</option>
-					</c:forEach>
-				</select>
-			</div>
-			<div>
-				<label>제목</label>
-				<input id="postTitle" name="postTitle" type="text" required>
-			</div>
-			<div>
-				<label>작성자</label>
-				<input name="memberNickName" type="text" value="${memberNickName }" readonly >
-			</div>
-			<div>
-				<label>내용</label>
-				<textarea id="postContent" name="postContent" required></textarea>
-			</div>
-			
-			<input type="hidden" name="memberSeq" value="${memberSeq }">
-			<button type='submit'>만들기</button>
 		</form>
-	</div>
+	</section>
 	<script type="text/javascript">
 		CKEDITOR.replace( 
             'postContent'

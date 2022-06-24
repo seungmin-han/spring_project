@@ -36,12 +36,13 @@
 .formControl {
     border: 1px solid #aaa!important;
     width: 250px;
-    height: 30px;
+    height: 40px;
     line-height: 30px;
     margin: 10px 0;
 }
 
 .btn {
+    border: 1px solid #aaa!important;
     margin: 10px auto;
     font-weight: bold;
     font-size: 14px;
@@ -49,17 +50,18 @@
     border-radius: 5px;
     text-align: center;
     background-color:dodgerblue;
+    padding: 5px 10px;
 }
 
-.loginWrap .formWrap {
+.formWrap {
     display: flex;
     flex-direction: column;
     justify-content: space-evenly;
 }
 
 .loginWrap .formWrap > div {
-    line-height: 50px;
     width: 31%;
+    line-height: 50px;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -85,3 +87,42 @@
     margin-top: 100px;
 }
 
+
+/* 커뮤니티 화면 */
+
+.communityWrap h1 {
+    font-size: 38px;
+}
+
+/* 게시글 작성 화면 */
+
+.postWrap .formWrap > div{
+    width: 100%;
+    line-height: 50px;
+    display: flex;
+    flex-direction: row;
+}
+
+.postWrap .formWrap > div *{
+    margin: 0;
+}
+
+.postWrap .formWrap > div > *:first-child {
+    flex-basis: 15%;
+}
+
+.postWrap .formWrap > div > *:not(.postWrap .formWrap > div > *:first-child) {
+    margin: 5px 5px;
+    flex-grow: 1;
+}
+
+.buttonWrap {
+    justify-content: space-between;
+}
+
+.buttonWrap .btn {
+    flex-basis: 40%!important;
+    flex-grow: 0.8;
+    margin: 20px 0 0 0!important;
+    
+}

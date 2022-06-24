@@ -21,7 +21,7 @@
 					<input class="textField formControl" type="password" name="memberPw" />
 				</div>
 				<div>
-					<label>비밀번호 확인</label>
+					<label>비밀번호확인</label>
 					<input class="textField formControl" type="password" name="memberPwChk" />
 				</div>
 				<div>
