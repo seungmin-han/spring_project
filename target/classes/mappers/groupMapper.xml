@@ -4,7 +4,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.inhatc.mapper.GroupMapper">
-
 	<insert id="create" parameterType="com.inhatc.domain.GroupVO" useGeneratedKeys="true" keyProperty="groupSeq">
 		insert
 			tbl_group
@@ -126,8 +125,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         	grp.groupSeq
 		]]>
 	</select>
-	<select id="readAllList" resultType="java.util.HashMap">
-		<![CDATA[
+	
+	<sql id="selectGroupList">
 		SELECT 
 		  grp.groupSeq 
 		  , groupName 
@@ -156,11 +155,17 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		  , groupImageName 
 		FROM 
 		  tbl_group AS grp 
-		  LEFT JOIN joinStatus AS jst ON grp.groupSeq = jst.groupSeq 
+		LEFT JOIN joinStatus AS jst ON grp.groupSeq = jst.groupSeq 
 		  AND jst.memberSeq = #{memberSeq}
-		  LEFT JOIN groupImage AS gi ON gi.groupSeq = grp.groupSeq
-        	AND gi.groupImageThumNy = 1
-          LEFT JOIN groupTag AS gt ON gt.groupSeq = grp.groupSeq
+		LEFT JOIN groupImage AS gi ON gi.groupSeq = grp.groupSeq
+       	  AND gi.groupImageThumNy = 1
+        LEFT JOIN groupTag AS gt ON gt.groupSeq = grp.groupSeq
+	</sql>
+	
+	<select id="readAllList" resultType="java.util.HashMap">
+		<include refid="selectGroupList"></include>
+		<![CDATA[
+		
 		WHERE 
 		  grp.groupDelNy = 0
 		GROUP BY
@@ -168,40 +173,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		]]>
 	</select>
 	<select id="readAllListWithKeyword" resultType="java.util.HashMap" parameterType="Map">
-		<![CDATA[
-		SELECT 
-		  grp.groupSeq 
-		  , groupName 
-		  , groupText
-		  , grp.memberSeq 
-		  ,(
-			SELECT 
-			  COUNT(*) 
-			FROM 
-			  joinStatus 
-			WHERE 
-			  groupSeq = grp.groupSeq 
-			  AND joinStatusCd = 'Y'  
-			GROUP BY 
-			  groupSeq 	
-		    ) AS memberCount
-		  , CASE
-		    WHEN joinStatusCd = 'Y'
-		    THEN '가입됨'
-		    WHEN joinStatusCd = 'W'
-		    THEN '승인대기'
-		        ELSE NULL
-		  END AS joinStatusCdText 
-		  , joinStatusCd
-		  , GROUP_CONCAT(DISTINCT groupTagName SEPARATOR',') AS groupTags
-		  , groupImageName 
-		FROM 
-		  tbl_group AS grp 
-		  LEFT JOIN joinStatus AS jst ON grp.groupSeq = jst.groupSeq 
-		  AND jst.memberSeq = #{memberSeq}
-		  LEFT JOIN groupImage AS gi ON gi.groupSeq = grp.groupSeq
-        	AND gi.groupImageThumNy = 1
-          LEFT JOIN groupTag AS gt ON gt.groupSeq = grp.groupSeq 
+		<include refid="selectGroupList"></include>
+		<![CDATA[  
 		WHERE 
 		  (
 		    groupName LIKE #{keyword}
@@ -214,54 +187,63 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		]]>
 	</select>
 	<select id="readRecommendList" resultType="java.util.HashMap">
+		<include refid="selectGroupList"></include>
 		<![CDATA[
-		SELECT 
-		  grp.groupSeq 
-		  , groupName
-		  , groupText 
-		  , grp.memberSeq
-		  ,(
-			SELECT 
-			  COUNT(*) 
-			FROM 
-			  joinStatus 
-			WHERE 
-			  groupSeq = grp.groupSeq 
-			  AND joinStatusCd = 'Y'  
-			GROUP BY 
-			  groupSeq 	
-		    ) AS memberCount
-		  , CASE
-		    WHEN joinStatusCd = 'Y'
-		    THEN '가입됨'
-		    WHEN joinStatusCd = 'W'
-		    THEN '승인대기'
-		        ELSE NULL
-		  END AS joinStatusCdText 
-		  , joinStatusCd
-		  , GROUP_CONCAT(DISTINCT groupTagName SEPARATOR',') AS groupTags
-		  , groupImageName 
-		FROM 
-		  tbl_group AS grp 
-		LEFT JOIN joinStatus AS jst ON grp.groupSeq = jst.groupSeq 
-		      AND jst.memberSeq = #{memberSeq}
-		LEFT JOIN groupImage AS gi ON gi.groupSeq = grp.groupSeq
-			  AND gi.groupImageThumNy = 1
-		    LEFT JOIN groupTag AS gt ON gt.groupSeq = grp.groupSeq
-		WHERE 
-		  grp.groupDelNy = 0 
-		    AND NOT EXISTS(
-		      SELECT 
-		        memberSeq 
-		      FROM 
-		        joinStatus 
-		      WHERE 
-			    groupSeq = grp.groupSeq
-		        AND NOT joinStatusCd = 'N' 
-		        AND memberSeq = #{memberSeq}
-		  )
-		GROUP BY 
-		  grp.groupSeq
+		  WHERE 
+          grp.groupDelNy = 0
+            AND NOT EXISTS
+            (
+              SELECT 
+                memberSeq 
+              FROM 
+                joinStatus 
+              WHERE 
+        	    groupSeq = grp.groupSeq
+                AND NOT joinStatusCd = 'N' 
+                AND memberSeq = #{memberSeq}
+            ) 
+            AND 
+            (
+              EXISTS 
+              (
+          	    SELECT 
+          		  memberTagName
+          	    FROM
+          		  memberTag
+          	    WHERE
+                  memberSeq = #{memberSeq}
+          		  AND memberTagName IN 
+                  (
+        		    SELECT 
+        		      groupTagName
+        			FROM
+          	  		  groupTag
+           		    WHERE
+          			  groupTag.groupSeq = grp.groupSeq
+          		  )  	
+        	  ) 
+              OR 
+        		EXISTS 
+                (
+        		  SELECT
+                    groupTagName
+        		  FROM
+                    groupTag
+        		  WHERE
+                    groupTagName REGEXP 
+                    (
+        			  SELECT 
+                        GROUP_CONCAT(memberTagName SEPARATOR '|') AS memberTagNames
+        			  FROM
+                        memberTag
+        			  WHERE 
+                        memberSeq = #{memberSeq}
+                    )
+                    AND grouptag.groupSeq = grp.groupSeq
+                )
+            )
+        GROUP BY 
+          grp.groupSeq
 		]]>
 	</select>
 	<select id="readJoinedGroup" resultType="com.inhatc.domain.GroupVO">

@@ -1,0 +1,87 @@
+/* main(home.jsp) */
+
+.mainWrap a {
+    color: #000;
+}
+
+.mainWrap h2 {
+    display: inline;
+    line-height: 40px;
+}
+
+.mainWrap span {
+    float: right;
+    font-size: 14px;
+    line-height: 40px;
+}
+
+.mainWrap p {
+    padding: 30px 0;
+    color: #aaa;
+}
+
+/* login&register(login.jsp, register.jsp) */
+
+/* 공통 */
+
+.loginWrap label {
+    margin: 0;
+    flex-shrink: 0;
+}
+
+.textField {
+    padding: 5px;
+}
+
+.formControl {
+    border: 1px solid #aaa!important;
+    width: 250px;
+    height: 30px;
+    line-height: 30px;
+    margin: 10px 0;
+}
+
+.btn {
+    margin: 10px auto;
+    font-weight: bold;
+    font-size: 14px;
+    color: #fff!important;
+    border-radius: 5px;
+    text-align: center;
+    background-color:dodgerblue;
+}
+
+.loginWrap .formWrap {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+}
+
+.loginWrap .formWrap > div {
+    line-height: 50px;
+    width: 31%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-content: center;
+}
+
+/* 로그인 화면 */
+.loginWrap h1{
+    text-align: center;
+    padding: 30px 0;
+    font-size: 48px;
+}
+
+.loginFormWrap > div {
+    width: 21%!important;
+}
+
+
+
+/* 회원가입 화면 */
+
+.registerWrap {
+    margin-top: 100px;
+}
+

@@ -15,50 +15,51 @@
 </head>
 <body>
 	<c:import url="header.jsp"></c:import>
-	<form action="/post/create" method="post" enctype="multipart/form-data" style="width:70%">
-		<div>
-			<label>게시판/말머리</label>
-			<select name="boardSeq" required>
-				<option value="">게시판 선택</option>
-				<c:forEach items="${boardList }" var="boardItem">
-					<option value="${boardItem.boardSeq} ">${boardItem.boardName }</option>
-				</c:forEach>
-			</select>
-			<select name="subjectSeq">
-				<option value="0">말머리 없음</option>
-			</select>
-		</div>
-		<div>
-			<label>공개 여부</label><br>
-			그룹 공개<input type="radio" name="postPublicNy" value="0" checked>
-			전체 공개<input type="radio" name="postPublicNy" value="1">	
-		</div>
-		<div id="group">
-			<label>그룹 선택</label>
-			<select name="groupSeq">
-				<option value="0">그룹 선택</option>
-				<c:forEach items="${groupList }" var="groupItem">
-					<option value="${groupItem.groupSeq} ">${groupItem.groupName }</option>
-				</c:forEach>
-			</select>
-		</div>
-		<div>
-			<label>제목</label>
-			<input id="postTitle" name="postTitle" type="text" required>
-		</div>
-		<div>
-			<label>작성자</label>
-			<input name="memberNickName" type="text" value="${memberNickName }" readonly >
-		</div>
-		<div>
-			<label>내용</label>
-			<textarea id="postContent" name="postContent" required></textarea>
-		</div>
-		
-		<input type="hidden" name="memberSeq" value="${memberSeq }">
-		<button type='submit'>만들기</button>
-	</form>
-	
+	<div class="wrap">
+		<form action="/post/create" method="post" enctype="multipart/form-data">
+			<div>
+				<label>게시판/말머리</label>
+				<select name="boardSeq" required>
+					<option value="">게시판 선택</option>
+					<c:forEach items="${boardList }" var="boardItem">
+						<option value="${boardItem.boardSeq} ">${boardItem.boardName }</option>
+					</c:forEach>
+				</select>
+				<select name="subjectSeq">
+					<option value="0">말머리 없음</option>
+				</select>
+			</div>
+			<div>
+				<label>공개 여부</label><br>
+				그룹 공개<input type="radio" name="postPublicNy" value="0" checked>
+				전체 공개<input type="radio" name="postPublicNy" value="1">	
+			</div>
+			<div id="group">
+				<label>그룹 선택</label>
+				<select name="groupSeq">
+					<option value="0">그룹 선택</option>
+					<c:forEach items="${groupList }" var="groupItem">
+						<option value="${groupItem.groupSeq} ">${groupItem.groupName }</option>
+					</c:forEach>
+				</select>
+			</div>
+			<div>
+				<label>제목</label>
+				<input id="postTitle" name="postTitle" type="text" required>
+			</div>
+			<div>
+				<label>작성자</label>
+				<input name="memberNickName" type="text" value="${memberNickName }" readonly >
+			</div>
+			<div>
+				<label>내용</label>
+				<textarea id="postContent" name="postContent" required></textarea>
+			</div>
+			
+			<input type="hidden" name="memberSeq" value="${memberSeq }">
+			<button type='submit'>만들기</button>
+		</form>
+	</div>
 	<script type="text/javascript">
 		CKEDITOR.replace( 
             'postContent'

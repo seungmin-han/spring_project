@@ -119,7 +119,7 @@ public class GroupController {
 	
 	@RequestMapping(value="/update", method=RequestMethod.POST)
 	public String groupUpdate(@ModelAttribute GroupVO vo, Model model) {
-		String result = "redirect:/group/update/"+vo.getGroupSeq();
+		String result = "redirect:/group/update/"+ vo.getGroupSeq();
 		try {
 			groupService.update(vo);
 			result = "redirect:/group/"+vo.getGroupSeq();
