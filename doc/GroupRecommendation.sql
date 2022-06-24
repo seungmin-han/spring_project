@@ -76,24 +76,24 @@ WHERE
     해당 그룹의 가입 상태에서 코드가 'N'이 아닌 ('Y' or 'W')
     나의 가입 상태가 존재 하지 않아야함. 
 */
-    AND NOT EXISTS
-    (
-      SELECT 
-        memberSeq 
-      FROM 
-        joinStatus 
-      WHERE 
-	    groupSeq = grp.groupSeq
-        AND NOT joinStatusCd = 'N' 
-        AND memberSeq = #{memberSeq}
-    ) 
+  AND NOT EXISTS
+  (
+    SELECT 
+      memberSeq 
+    FROM 
+      joinStatus 
+    WHERE 
+	  groupSeq = grp.groupSeq
+      AND NOT joinStatusCd = 'N' 
+      AND memberSeq = #{memberSeq}
+  ) 
 /*
     조건 3. (AND)
 
     아래 조건 중 하나만 성립되어도 참(True)
 */
-    AND 
-    (
+  AND 
+  (
 /*
     조건 3-1. (OR)
 
@@ -104,25 +104,25 @@ WHERE
         그룹에서 설정한 태그: 축구
         인 경우 True
 */
-      EXISTS 
-      (
-  	    SELECT 
-  		  memberTagName
-  	    FROM
-  		  memberTag
-  	    WHERE
-          memberSeq = #{memberSeq}
-  		  AND memberTagName IN 
-          (
-		    SELECT 
-		      groupTagName
-			FROM
-  	  		  groupTag
-   		    WHERE
-  			  groupTag.groupSeq = grp.groupSeq
-  		  )  	
+    EXISTS 
+    (
+  	  SELECT 
+  	  memberTagName
+  	  FROM
+  	  memberTag
+  	  WHERE
+        memberSeq = #{memberSeq}
+  	  AND memberTagName IN 
+        (
+		  SELECT 
+		    groupTagName
+		FROM
+  			  groupTag
+   	    WHERE
+  		  groupTag.groupSeq = grp.groupSeq
+  	  )  	
 	  ) 
-      OR 
+    OR 
 /*
     조건 3-2. (OR)
 
@@ -133,25 +133,25 @@ WHERE
         그룹에서 설정한 태그: 축구관람
         인 경우 True
 */
-		EXISTS 
+	EXISTS 
+    (
+	    SELECT
+        groupTagName
+	    FROM
+        groupTag
+	    WHERE
+        groupTagName REGEXP 
         (
-		  SELECT
-            groupTagName
-		  FROM
-            groupTag
-		  WHERE
-            groupTagName REGEXP 
-            (
-			  SELECT 
-                GROUP_CONCAT(memberTagName SEPARATOR '|') AS memberTagNames
-			  FROM
-                memberTag
-			  WHERE 
-                memberSeq = #{memberSeq}
-            )
-            AND grouptag.groupSeq = grp.groupSeq
+	        SELECT 
+            GROUP_CONCAT(memberTagName SEPARATOR '|') AS memberTagNames
+	        FROM
+            memberTag
+	        WHERE 
+            memberSeq = #{memberSeq}
         )
+      AND grouptag.groupSeq = grp.groupSeq
     )
+  )
 GROUP BY 
   grp.groupSeq
 
