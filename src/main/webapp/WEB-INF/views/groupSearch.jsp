@@ -11,7 +11,7 @@
   	crossorigin="anonymous"></script>
   	<script type="text/javascript" src="/resources/script/group.js"></script>
   	<link rel="stylesheet" href="/resources/stylesheet/common.css">
-	<link rel="stylesheet" href="/resources/stylesheet/content.css">
+	<link rel="stylesheet" type="text/css" href="/resources/stylesheet/content.css">
 </head>
 <body>
 	<c:if test="${empty sessionScope.memberNickName}">
